@@ -36,90 +36,78 @@ for ind in unique_objects_data.index:
 
 # WEIGHTED SUM - sum the wavelengths
 unique_objects_data["Weighted Sum"] = unique_objects_data[unique_objects_data.columns[-5:]].sum(axis=1)
-#
-# color = ['m', 'r', 'y', 'g', 'b']
-# norm = []
-# raw = []
-# # plt.figure()
-# # for cr, cn in zip(unique_objects_data[unique_objects_data.columns[6:11]],
-# #                   unique_objects_data[unique_objects_data.columns[12:17]]):
-# #     filter_unique_norm = unique_objects_data[unique_objects_data[cn] > 0.1]
-# #     plt.subplot(2, 1, 1)
-# #     plt.hist(unique_objects_data[cr].tolist(), color=color[unique_objects_data.columns.get_loc(cr) - 6],
-# #              edgecolor='black', linewidth=1.2)
-# #     raw.append(unique_objects_data[cr].tolist())
-# #     plt.title(cr + ' Raw')
-# #     plt.xlabel('Raw Mean Intensity')
-# #     plt.tight_layout()
-# #     plt.subplot(2, 1, 2)
-# #     norm.append(filter_unique_norm[cn].tolist())
-# #     plt.hist(filter_unique_norm[cn].tolist(), color=color[unique_objects_data.columns.get_loc(cr) - 6],
-# #              edgecolor='black', linewidth=1.2)
-# #     plt.title(cn)
-# #     plt.xlabel('Norm Mean Intensity')
-# #     plt.tight_layout()
-# #     plt.savefig(base_path + "channel_distribution/" + cr + '_comb' + '.png')
-# #     ##plt.show()
-#
-# fig, ax = plt.subplots()
-# for i, c in enumerate(color):
-#     plt.title("Norm Histograms Overlaid")
-#     plt.xlabel('Norm Mean Intensity')
-#     ax.hist(norm[i], color=c, alpha=0.5, edgecolor='black', linewidth=1.2)
-# plt.savefig(base_path + "channel_distribution/" + 'norm_overlay' + '.png')
-#
-# fig2, ax2 = plt.subplots()
-# for i, c in enumerate(color):
-#     plt.title("Raw Histograms Overlaid")
-#     plt.xlabel('Raw Mean Intensity')
-#     ax2.hist(raw[i], color=c, alpha=0.5, edgecolor='black', linewidth=1.2)
-# plt.savefig(base_path + "channel_distribution/" + 'raw_overlay' + '.png')
-# #
-# #
-#
-#
-# # CELL DISTRIBUTION - bar graph
-# ind = ['C2', 'C3', 'C4', 'C5', 'C6']
-# values = []
-# for index, row in unique_objects_data[unique_objects_data.columns[11:16]].iterrows():
-#     object_name = str(int(unique_objects_data.iloc[index]['Object Number']) + 1)
-#     coord_name = '(' + str(round(unique_objects_data.iloc[index]['Center X'], 2)) + ',' + \
-#                  str(round(unique_objects_data.iloc[index]['Center Y'], 2)) + ')'
-#     title = object_name + ':' + coord_name
-#     plt.figure()
-#     row = [x / unique_objects_data['Intensity Sum'][index] for x in row.tolist()]
-#     bar = plt.bar(ind, row, 0.35)
-#     for i, c in enumerate(color):
-#         bar[i].set_color(c)
-#     plt.title(title)
-#     plt.savefig(base_path + "cell_distribution/" + object_name + '.png')
+color = ['m', 'r', 'y', 'g', 'b']
 
-# #
-#
-#
-# #
-# X = np.arange(115)
-# c2 = [i[0] for i in values]
-# c3 = [i[1] for i in values]
-# c4 = [i[2] for i in values]
-# c5 = [i[3] for i in values]
-# c6 = [i[4] for i in values]
-#
-# vals = [c2, c3, c4, c5, c6]
-# width = 0.8
-# plt.figure(figsize=(15, 5))
-# n = len(vals)
-# _X = np.arange(len(X))
-# for i in range(n):
-#     plt.bar(_X - width / 2. + i / float(n) * width, vals[i],
-#             width=width / float(n), color=color[i], align="center")
-#
-# plt.autoscale(tight=True)
-# plt.tight_layout()
-# plt.xticks(X[::3], X[::3])
-# plt.ylim(0, 8)
-# plt.ylabel("Intensity")
-# plt.xlabel("Cell Number")
-# plt.savefig(base_path + "cell_distribution/" + 'grouped' + '.png')
 
-# #plt.show()
+# CHANNEL DISTRIBUTION - histogram graph
+def generate_channel_dist():
+    norm = []
+    raw = []
+    i = 0
+    fig, ax = plt.subplots(6, 2, figsize=(8, 10), tight_layout=True)
+    plt.tight_layout()
+    raw_threshold = [0.01, 0.01, 0.01, 0.025, 0.005]
+    for cr, cn in zip(unique_objects_data[unique_objects_data.columns[6:11]],
+                      unique_objects_data[unique_objects_data.columns[11:16]]):
+        # filter_unique_raw = unique_objects_data[unique_objects_data[cr] > raw_threshold[i]]
+        filter_unique_raw = unique_objects_data.loc[unique_objects_data[cr] > raw_threshold[i]]
+        filter_unique_norm = unique_objects_data.loc[unique_objects_data[cn] > raw_threshold[i] /
+                                                     unique_objects_data[cr].max()]
+
+        ax[i, 0].hist(filter_unique_raw[cr].tolist(), bins=30, color=color[unique_objects_data.columns.get_loc(cr) - 6],
+                      edgecolor='black', linewidth=1.2)
+        raw.append(filter_unique_raw[cr].tolist())
+        ax[i, 0].set_title(cr + ' Raw')
+        ax[i, 0].set_xlabel('Raw Mean Intensity')
+        ax[i, 0].set_xlim(xmin=0)
+        ax[i, 0].set_yscale('log')
+
+        norm.append(filter_unique_norm[cn].tolist())
+        ax[i, 1].set_title(cn)
+        ax[i, 1].hist(filter_unique_norm[cn].tolist(), bins=30,
+                      color=color[unique_objects_data.columns.get_loc(cr) - 6],
+                      edgecolor='black', linewidth=1.2)
+        ax[i, 1].set_xlabel('Norm Mean Intensity')
+        ax[i, 1].set_xlim(xmin=0)
+        #ax[i, 1].set_yscale('log')
+
+        i += 1
+
+    for i, c in enumerate(color):
+        ax[5, 0].hist(raw[i], bins=30, color=c, alpha=0.5, edgecolor='black', linewidth=1.2)
+        ax[5, 1].hist(norm[i], bins=30, color=c, alpha=0.5, edgecolor='black', linewidth=1.2)
+
+    ax[5, 1].set_title("Norm Histograms Overlaid")
+    ax[5, 1].set_xlabel('Norm Mean Intensity')
+    ax[5, 1].set_xlim(xmin=0)
+    #ax[5, 1].set_yscale('log')
+    ax[5, 0].set_title("Raw Histograms Overlaid")
+    ax[5, 0].set_xlabel('Raw Mean Intensity')
+    ax[5, 0].set_xlim(xmin=0)
+    ax[5, 0].set_yscale('log')
+
+    plt.savefig(base_path + "channel_distribution/" + 'w_filter_comb_revised' + '.png')
+    plt.show()
+
+
+#generate_channel_dist()
+
+
+# CELL DISTRIBUTION - bar graph
+def generate_cell_dist():
+    ind = ['C2', 'C3', 'C4', 'C5', 'C6']
+    for index, row in unique_objects_data[unique_objects_data.columns[11:16]].iterrows():
+        object_name = str(int(unique_objects_data.iloc[index]['Object Number']) + 1)
+        coord_name = '(' + str(round(unique_objects_data.iloc[index]['Center X'], 2)) + ',' + \
+                     str(round(unique_objects_data.iloc[index]['Center Y'], 2)) + ')'
+        title = object_name + ':' + coord_name
+        plt.figure()
+        row = [x / unique_objects_data['Intensity Sum'][index] for x in row.tolist()]
+        bar = plt.bar(ind, row, 0.35)
+        for i, c in enumerate(color):
+            bar[i].set_color(c)
+        plt.title(title)
+        plt.savefig(base_path + "cell_distribution/" + object_name + '.png')
+        #plt.show()
+
+#generate_cell_dist()

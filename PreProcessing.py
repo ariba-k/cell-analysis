@@ -80,37 +80,38 @@ eccentricity_df.to_csv(base_path + 'eccentricity.csv', index=False, header=True)
 
 ######### Create Histogram Graph - Eccentricity ############
 
-fig, axs = plt.subplots(2, 3)
+def create_eccen_histo():
 
-# Channel 2
-axs[0, 0].hist(c2_df['AreaShape_Eccentricity'], color='#FF00FF')
-axs[0, 0].set_title(c2_df.name)
+    fig, axs = plt.subplots(2, 3)
 
-# Channel 3
-axs[0, 1].hist(c3_df['AreaShape_Eccentricity'], color='r')
-axs[0, 1].set_title(c3_df.name)
+    # Channel 2
+    axs[0, 0].hist(c2_df['AreaShape_Eccentricity'], color='#FF00FF')
+    axs[0, 0].set_title(c2_df.name)
 
-# Channel 4
-axs[0, 2].hist(c4_df['AreaShape_Eccentricity'], color='y')
-axs[0, 2].set_title(c4_df.name)
+    # Channel 3
+    axs[0, 1].hist(c3_df['AreaShape_Eccentricity'], color='r')
+    axs[0, 1].set_title(c3_df.name)
 
-# Channel 5
-axs[1, 0].hist(c5_df['AreaShape_Eccentricity'], color='g')
-axs[1, 0].set_title(c5_df.name)
+    # Channel 4
+    axs[0, 2].hist(c4_df['AreaShape_Eccentricity'], color='y')
+    axs[0, 2].set_title(c4_df.name)
 
-# Channel 6
-axs[1, 1].hist(c6_df['AreaShape_Eccentricity'], color='b')
-axs[1, 1].set_title(c6_df.name)
+    # Channel 5
+    axs[1, 0].hist(c5_df['AreaShape_Eccentricity'], color='g')
+    axs[1, 0].set_title(c5_df.name)
 
-# Total
-axs[1, 2].hist(total_df['AreaShape_Eccentricity'], color='k')
-axs[1, 2].set_title(total_df.name)
+    # Channel 6
+    axs[1, 1].hist(c6_df['AreaShape_Eccentricity'], color='b')
+    axs[1, 1].set_title(c6_df.name)
 
-plt.tight_layout()
+    # Total
+    axs[1, 2].hist(total_df['AreaShape_Eccentricity'], color='k')
+    axs[1, 2].set_title(total_df.name)
+
+    plt.tight_layout()
 
 ######### PLOTTING CELLS AS POINTS  ############
 plt.figure(figsize=(5.511013215859031, 5.511013215859031))
-
 
 c2_df.set_index('ImageNumber', inplace=True)
 c3_df.set_index('ImageNumber', inplace=True)
@@ -147,27 +148,44 @@ plt.tight_layout()
 # plt.show()
 
 ######### Determine and Remove Cells w/ Same Center ############
-plt.figure()
+#plt.figure()
 threshold = 10
-center_coords = [(e, f) for c in channel_names for e, f in
-                 zip(c['AreaShape_Center_X'].loc[1], c['AreaShape_Center_Y'].loc[1])]
-center_coords_x = [e for c in channel_names for e in
-                   c['AreaShape_Center_X'].loc[1]]
+# center_coords = [(e, f) for c in channel_names for e, f in
+#                  zip(c['AreaShape_Center_X'].loc[1], c['AreaShape_Center_Y'].loc[1])]
+# center_coords_x = [e for c in channel_names for e in
+#                    c['AreaShape_Center_X'].loc[1]]
+unique_cc = []
+unique_xc = []
+unique_yc = []
+for n in range(1, num_imgs+1):
+    center_coords = [(e, f) for c in channel_names for e, f in
+                     zip(c['AreaShape_Center_X'].loc[n], c['AreaShape_Center_Y'].loc[n])]
+    center_coords_x = [e for c in channel_names for e in
+                       c['AreaShape_Center_X'].loc[n]]
+    #print(str(n) + ":" + str(center_coords))
+    #print(str(n) + ":" + str(len(center_coords)))
+    dupl_cc = set([center_coords[j] for i in range(len(center_coords)) for j in range(i + 1, len(center_coords)) if
+                   (math.hypot(center_coords[i][0] - center_coords[j][0],
+                               center_coords[i][1] - center_coords[j][1]) <= threshold)])
 
-dupl_cc = set([center_coords[j] for i in range(len(center_coords)) for j in range(i + 1, len(center_coords)) if
-               (math.hypot(center_coords[i][0] - center_coords[j][0],
-                           center_coords[i][1] - center_coords[j][1]) <= threshold)])
+    dupl_clusters = set([(center_coords[i][0], center_coords[j][0]) for i in range(len(center_coords))
+                         for j in range(i + 1, len(center_coords)) if (math.hypot(center_coords[i][0] - center_coords[j][0],
+                                                                                  center_coords[i][1] - center_coords[j][1])
+                                                                       <= threshold)])
 
-dupl_clusters = set([(center_coords[i][0], center_coords[j][0]) for i in range(len(center_coords))
-                     for j in range(i + 1, len(center_coords)) if (math.hypot(center_coords[i][0] - center_coords[j][0],
-                                                                              center_coords[i][1] - center_coords[j][1])
-                                                                   <= threshold)])
+    unique_cc_inc = [x for x in center_coords if x not in list(dupl_cc)]
+    unique_cc.append(unique_cc_inc)
+    unique_xc_inc = [c[0] for c in unique_cc_inc]
+    unique_xc.append(unique_xc_inc)
+    unique_yc_inc = [c[1] for c in unique_cc_inc]
+    unique_yc.append(unique_yc_inc)
 
-unique_cc = [x for x in center_coords if x not in list(dupl_cc)]
-unique_xc = [c[0] for c in unique_cc]
-unique_yc = [c[1] for c in unique_cc]
+unique_cc = [c_c for n in unique_cc for c_c in n]
+unique_xc = [x_c for n in unique_xc for x_c in n]
+unique_yc = [y_c for n in unique_yc for y_c in n]
 
-plt.scatter(unique_xc, unique_yc, s=12)
+
+#plt.scatter(unique_xc, unique_yc, s=12)
 
 # plt.show()
 
@@ -188,8 +206,6 @@ unique_min = [total_df.loc[total_df['AreaShape_Center_X'] == x_c, 'AreaShape_Min
               for x_c in unique_xc]
 unique_angle = [total_df.loc[total_df['AreaShape_Center_X'] == x_c, 'AreaShape_Orientation'].item()
                 for x_c in unique_xc]
-
-
 
 
 def find_intersection(duplicates):
@@ -251,4 +267,4 @@ unique_objects_data = pd.DataFrame(
     columns=['Object Number', 'Center X', 'Center Y', 'Major Axis', 'Minor Axis', 'Angle',
              'Channel 2', 'Channel 3', 'Channel 4', 'Channel 5', 'Channel 6'])
 
-#print(unique_objects_data[unique_objects_data.columns[-5:]])
+# print(unique_objects_data[unique_objects_data.columns[-5:]])
