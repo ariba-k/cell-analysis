@@ -1,7 +1,12 @@
-from PreProcessing import *
 import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse
+from test_pp import *
 import math
+
+df = fin_unique_objects_data.loc[fin_unique_objects_data['Image Number'] == 27.0]
+unique_xc = list(df['Center X'])
+unique_yc = list(df['Center Y'])
+num_identifier = list(df['Object Number'])
 
 output_path = '/Users/aribakhan/Dropbox (MIT)/shared_Khan/images/'
 input_path = '/Users/aribakhan/Dropbox (MIT)/shared_Khan/cell_segmentation_data/InputData/'
@@ -21,16 +26,16 @@ img4 = plt.imread(input_path+'Channel 4/Tile_05_c4m27.png')
 img5 = plt.imread(input_path+'Channel 5/Tile_05_c5m27.png')
 img6 = plt.imread(input_path+'Channel 6/Tile_05_c6m27.png')
 
-unique_angle = [-math.degrees(a + 2 * math.pi) if a < 0 else math.degrees(a) for a in unique_angle]
-# c2_angle = [math.degrees(a+math.pi/2) if a < 0 else math.degrees(a) for a in c2_df['AreaShape_Orientation'].loc[1]]
-# c2_angle = [-(np.arctan(a)*(180/math.pi)) if a < 0 else (np.arctan(a)*(180/math.pi)) for a in c2_df['AreaShape_Orientation'].loc[1]]
-# c2_angle = [-math.degrees(np.arctan(a)) if a < 0 else math.degrees(np.arctan(a)) for a in c2_df['AreaShape_Orientation'].loc[1]]
+# unique_angle = [-math.degrees(a + 2 * math.pi) if a < 0 else math.degrees(a) for a in unique_angle]
+# # c2_angle = [math.degrees(a+math.pi/2) if a < 0 else math.degrees(a) for a in c2_df['AreaShape_Orientation'].loc[1]]
+# # c2_angle = [-(np.arctan(a)*(180/math.pi)) if a < 0 else (np.arctan(a)*(180/math.pi)) for a in c2_df['AreaShape_Orientation'].loc[1]]
+# # c2_angle = [-math.degrees(np.arctan(a)) if a < 0 else math.degrees(np.arctan(a)) for a in c2_df['AreaShape_Orientation'].loc[1]]
+# # c2_angle = [-math.degrees(a + 2 * math.pi) if a < 0 else math.degrees(a) for a in c2_df['AreaShape_Orientation'].loc[1]]
 # c2_angle = [-math.degrees(a + 2 * math.pi) if a < 0 else math.degrees(a) for a in c2_df['AreaShape_Orientation'].loc[1]]
-c2_angle = [-math.degrees(a + 2 * math.pi) if a < 0 else math.degrees(a) for a in c2_df['AreaShape_Orientation'].loc[1]]
-c3_angle = [-math.degrees(a + 2 * math.pi) if a < 0 else math.degrees(a) for a in c3_df['AreaShape_Orientation'].loc[1]]
-c4_angle = [-math.degrees(a + 2 * math.pi) if a < 0 else math.degrees(a) for a in c4_df['AreaShape_Orientation'].loc[1]]
-c5_angle = [-math.degrees(a + 2 * math.pi) if a < 0 else math.degrees(a) for a in c5_df['AreaShape_Orientation'].loc[1]]
-c6_angle = [-math.degrees(a + 2 * math.pi) if a < 0 else math.degrees(a) for a in c6_df['AreaShape_Orientation'].loc[1]]
+# c3_angle = [-math.degrees(a + 2 * math.pi) if a < 0 else math.degrees(a) for a in c3_df['AreaShape_Orientation'].loc[1]]
+# c4_angle = [-math.degrees(a + 2 * math.pi) if a < 0 else math.degrees(a) for a in c4_df['AreaShape_Orientation'].loc[1]]
+# c5_angle = [-math.degrees(a + 2 * math.pi) if a < 0 else math.degrees(a) for a in c5_df['AreaShape_Orientation'].loc[1]]
+# c6_angle = [-math.degrees(a + 2 * math.pi) if a < 0 else math.degrees(a) for a in c6_df['AreaShape_Orientation'].loc[1]]
 
 # print(c2_angle)
 # print(c2_df['AreaShape_Orientation'].loc[1])
@@ -76,7 +81,8 @@ for x, y, n in zip(unique_xc, unique_yc, num_identifier):
 plt.gca().invert_yaxis()
 #ax.imshow(img)
 plt.imshow(img)
-plt.savefig(output_path + '/coordinates/actual/' + 'combined.png')
+plt.savefig(output_path + '/coordinates/final_actual/' + 'combined.png')
+
 
 ### C2 #####
 # fig, ax = plt.subplots(subplot_kw={'aspect': 'equal'})
@@ -90,15 +96,15 @@ plt.savefig(output_path + '/coordinates/actual/' + 'combined.png')
 # ax.set_ylim(0, 1024)
 plt.figure()
 plt.title("Channel 2")
-for x, y, n in zip(c2_df['AreaShape_Center_X'].loc[1], c2_df['AreaShape_Center_Y'].loc[1],
-                   c2_df['ObjectNumber'].loc[1]):
+for x, y, n in zip(c2_df['AreaShape_Center_X'].loc[27], c2_df['AreaShape_Center_Y'].loc[27],
+                   c2_df['ObjectNumber'].loc[27]):
     title = str(round(x, 2)) + "," + str(round(y, 2))
     plt.text(x - 7, y + 7, title, color='white', size=5)
 
 plt.gca().invert_yaxis()
 # ax.imshow(img2)
 plt.imshow(img2)
-plt.savefig(output_path + '/coordinates/actual/' + 'c2.png')
+plt.savefig(output_path + '/coordinates/final_actual/' + 'c2.png')
 
 ### C3 #####
 # fig, ax = plt.subplots(subplot_kw={'aspect': 'equal'})
@@ -112,14 +118,14 @@ plt.savefig(output_path + '/coordinates/actual/' + 'c2.png')
 # ax.set_ylim(0, 1024)
 plt.figure()
 plt.title("Channel 3")
-for x, y, n in zip(c3_df['AreaShape_Center_X'].loc[1], c3_df['AreaShape_Center_Y'].loc[1],
-                   c3_df['ObjectNumber'].loc[1]):
+for x, y, n in zip(c3_df['AreaShape_Center_X'].loc[27], c3_df['AreaShape_Center_Y'].loc[27],
+                   c3_df['ObjectNumber'].loc[27]):
     title = str(round(x, 2)) + "," + str(round(y, 2))
     plt.text(x - 7, y + 7, title, color='white', size=5)
 plt.gca().invert_yaxis()
 # ax.imshow(img3)
 plt.imshow(img3)
-plt.savefig(output_path + '/coordinates/actual/' + 'c3.png')
+plt.savefig(output_path + '/coordinates/final_actual/' + 'c3.png')
 
 ### C4 #####
 # fig, ax = plt.subplots(subplot_kw={'aspect': 'equal'})
@@ -133,14 +139,14 @@ plt.savefig(output_path + '/coordinates/actual/' + 'c3.png')
 # ax.set_ylim(0, 1024)
 plt.figure()
 plt.title("Channel 4")
-for x, y, n in zip(c4_df['AreaShape_Center_X'].loc[1], c4_df['AreaShape_Center_Y'].loc[1],
-                   c4_df['ObjectNumber'].loc[1]):
+for x, y, n in zip(c4_df['AreaShape_Center_X'].loc[27], c4_df['AreaShape_Center_Y'].loc[27],
+                   c4_df['ObjectNumber'].loc[27]):
     title = str(round(x, 2)) + "," + str(round(y, 2))
     plt.text(x - 7, y + 7, title, color='white', size=5)
 plt.gca().invert_yaxis()
 # ax.imshow(img4)
 plt.imshow(img4)
-plt.savefig(output_path + 'coordinates/actual/' + 'c4.png')
+plt.savefig(output_path + 'coordinates/final_actual/' + 'c4.png')
 
 ### C5 #####
 # fig, ax = plt.subplots(subplot_kw={'aspect': 'equal'})
@@ -154,14 +160,14 @@ plt.savefig(output_path + 'coordinates/actual/' + 'c4.png')
 # ax.set_ylim(0, 1024)
 plt.figure()
 plt.title("Channel 5")
-for x, y, n in zip(c5_df['AreaShape_Center_X'].loc[1], c5_df['AreaShape_Center_Y'].loc[1],
-                   c5_df['ObjectNumber'].loc[1]):
+for x, y, n in zip(c5_df['AreaShape_Center_X'].loc[27], c5_df['AreaShape_Center_Y'].loc[27],
+                   c5_df['ObjectNumber'].loc[27]):
     title = str(round(x, 2)) + "," + str(round(y, 2))
     plt.text(x - 7, y + 7, title, color='white', size=5)
 plt.gca().invert_yaxis()
 #ax.imshow(img5)
 plt.imshow(img5)
-plt.savefig(output_path + 'coordinates/actual/' + 'c5.png')
+plt.savefig(output_path + 'coordinates/final_actual/' + 'c5.png')
 
 ### C6 #####
 # fig, ax = plt.subplots(subplot_kw={'aspect': 'equal'})
@@ -175,13 +181,13 @@ plt.savefig(output_path + 'coordinates/actual/' + 'c5.png')
 # ax.set_ylim(0, 1024)
 plt.figure()
 plt.title("Channel 6")
-for x, y, n in zip(c6_df['AreaShape_Center_X'].loc[1], c6_df['AreaShape_Center_Y'].loc[1],
-                   c6_df['ObjectNumber'].loc[1]):
+for x, y, n in zip(c6_df['AreaShape_Center_X'].loc[27], c6_df['AreaShape_Center_Y'].loc[27],
+                   c6_df['ObjectNumber'].loc[27]):
     title = str(round(x, 2)) + "," + str(round(y, 2))
     plt.text(x - 7, y + 7, title, color='white', size=5)
 plt.gca().invert_yaxis()
 #ax.imshow(img6)
 plt.imshow(img6)
-plt.savefig(output_path + 'coordinates/actual/' + 'c6.png')
+plt.savefig(output_path + 'coordinates/final_actual/' + 'c6.png')
 
 plt.show()
